@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/joho/godotenv"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -23,6 +24,20 @@ func HashAndSalt(pwd []byte) string {
 	return string(hash)
 }
 
+// ComparePassword is used to compare a hashed pwd with plainpwd in byte slice.
+func ComparePasswords(hashedPwd string, plainPwd []byte) bool {
+	// Since we'll be getting the hashed password from the DB it
+	// will be a string so we'll need to convert it to a byte slice
+	byteHash := []byte(hashedPwd)
+	err := bcrypt.CompareHashAndPassword(byteHash, plainPwd)
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+
+	return true
+}
+
 // CreateFolder is used to create folders
 func CreateFolder(path string) bool {
 
@@ -36,4 +51,13 @@ func CreateFolder(path string) bool {
 
 	return true
 
+}
+
+// LoadEnvironmentVariables is used for load variable from .env file
+func LoadEnvironmentVariables() {
+	err := godotenv.Load(".env")
+
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
 }
