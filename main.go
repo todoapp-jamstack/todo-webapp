@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -13,11 +12,12 @@ import (
 )
 
 type Account struct {
+	Id       int
 	Username string
 	Password string
 }
 
-// functon to get the query to create the user table
+// function to get the query to create the user table
 func getQueryCreateUserTable() string {
 	return "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username VARCHAR(128), password VARCHAR(128), date_creation TEXT, date_updated TEXT)"
 }
@@ -82,14 +82,10 @@ func login(w http.ResponseWriter, r *http.Request) {
 	// hash password
 	account.Password = hashAndSalt([]byte(r.FormValue("Password")))
 
-	// convert it to json
-	b, err := json.Marshal(account)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	// return it
-	fmt.Fprintf(w, string(b))
+	//returnJson(w, account)
+	response := new(Response)
+
+	response.success(w, "login effettuato correttamente", account)
 
 }
 
