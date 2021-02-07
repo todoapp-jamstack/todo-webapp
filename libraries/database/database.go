@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"todo-webapp/libraries/tools"
 
 	// sqlite library used to connect to the sqlite3 db
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 // function to get the query to create the user table
@@ -43,33 +42,13 @@ func initializeDatabase() bool {
 func DbConnection() *sql.DB {
 
 	// create db connection
-	database, err := sql.Open("sqlite3", "db/todo.db")
+	con, err := sql.Open("mysql", os.Getenv("DB_USER")+":"+os.Getenv("DB_PASS")+"@/"+os.Getenv("DB_NAME"))
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// return db connection
-	return database
-
-}
-
-// CheckDBfolder is used to check if the db folder is created or
-// in case is not then it will be created
-func CheckDBfolder() bool {
-
-	// if the folder db does not exist create it
-	if _, err := os.Stat("db/todo.db"); os.IsNotExist(err) {
-
-		// create the db folder
-		if tools.CreateFolder("db") {
-			// Initialize the schema of the database
-			if initializeDatabase() {
-				return true
-			}
-		}
-	}
-
-	return false
+	return con
 
 }
