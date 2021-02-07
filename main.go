@@ -5,15 +5,13 @@ import (
 	"log"
 	"net/http"
 	"todo-webapp/libraries/account"
-	"todo-webapp/libraries/database"
+	"todo-webapp/libraries/tools"
 )
 
 func main() {
 
-	// check for database existence
-	if database.CheckDBfolder() {
-		fmt.Println("Database Initiated, ready to go!")
-	}
+	// load environment variables
+	tools.LoadEnvironmentVariables()
 
 	http.Handle("/", http.FileServer(http.Dir("public")))
 	http.HandleFunc("/api/users/login", account.Login)
