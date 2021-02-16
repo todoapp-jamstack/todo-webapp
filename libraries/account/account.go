@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"strings"
 	"todo-webapp/libraries/database"
 	"todo-webapp/libraries/response"
 	"todo-webapp/libraries/tools"
@@ -33,19 +34,23 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	// create object user
 	account := new(Account)
 
-	// fill the object with values
-	account.Username = r.FormValue("Username")
+	// lowercasing the username just in case if the client does not do it
+	account.Username = strings.ToLower(r.FormValue("Username"))
 	// hash password
 	account.Password = r.FormValue("Password")
 
 	// return json
 	//tools.HashAndSalt([]byte(account.Password)
-	response.Success(w, "login effettuato correttamente", checkPassword(account))
+	if checkPassword(account) {
+		response.Success(w, "Successfully logged in", nil)
+	} else {
+		response.Error(w, 400, "You have entered incorrect username/password")
+	}
 
 }
 
 func getQuerySelectUser() string {
-	return "SELECT `id`, `username`, `password` FROM `users` WHERE `username` = ?"
+	return "SELECT `id`, `username`, `password` FROM `user` WHERE `username` = ?"
 }
 
 // function to select a user by its username
